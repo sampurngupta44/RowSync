@@ -26,7 +26,7 @@ Copy rows from a production Microsoft SQL Server database to dev, stage, or any 
 ## Quick start
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/ghaemaghaey/RowSync
 cd RowSync
 
 python -m venv .venv
