@@ -1,0 +1,8 @@
+{
+  "connections": {
+    "production": "DRIVER={ODBC Driver 17 for SQL Server};SERVER=prod-host;DATABASE=ProdDB;UID=your_user;PWD=your_password;TrustServerCertificate=yes",
+    "dev": "DRIVER={ODBC Driver 17 for SQL Server};SERVER=dev-host;DATABASE=DevDB;UID=your_user;PWD=your_password;TrustServerCertificate=yes",
+    "stage": "DRIVER={ODBC Driver 17 for SQL Server};SERVER=stage-host;DATABASE=StageDB;UID=your_user;PWD=your_password;TrustServerCertificate=yes"
+  },
+  "preview_row_limit": 500
+}
