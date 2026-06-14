@@ -8,6 +8,7 @@
   --bg: #070b12;
   --bg-elevated: rgba(14, 20, 32, 0.82);
   --bg-soft: rgba(255, 255, 255, 0.03);
+  --bg-black: #000000;
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
   --text: #eef2f8;
@@ -24,6 +25,7 @@
   --radius-sm: 12px;
   --font: "DM Sans", system-ui, sans-serif;
   --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  color-scheme: dark;
 }
 
 html,
@@ -196,42 +198,97 @@ body {
   color: var(--text-faint);
 }
 
-.select-wrap {
+.custom-select {
   position: relative;
+  min-width: 160px;
 }
 
-.select-wrap::after {
-  content: "";
-  position: absolute;
-  right: 0.85rem;
-  top: 50%;
-  width: 0.45rem;
-  height: 0.45rem;
-  border-right: 2px solid var(--text-muted);
-  border-bottom: 2px solid var(--text-muted);
-  transform: translateY(-65%) rotate(45deg);
-  pointer-events: none;
-}
-
-select {
-  appearance: none;
-  min-width: 150px;
-  padding: 0.62rem 2.2rem 0.62rem 0.85rem;
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.62rem 0.85rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-strong);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text);
+  background: var(--bg-black);
+  color: #f8fafc;
   font: inherit;
   font-size: 0.92rem;
+  cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
-select:hover,
-select:focus {
+.custom-select-trigger:hover,
+.custom-select.open .custom-select-trigger,
+.custom-select-trigger:focus {
   outline: none;
   border-color: rgba(94, 234, 212, 0.35);
   box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08);
-  background: rgba(255, 255, 255, 0.06);
+  background: #0a0a0a;
+}
+
+.custom-select-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-select-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.custom-select.open .custom-select-chevron {
+  transform: rotate(180deg);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #000000;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.custom-select-menu.hidden {
+  display: none;
+}
+
+.custom-select-option {
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: #e8eef4 !important;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.custom-select-option:hover,
+.custom-select-option.focused {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff !important;
+}
+
+.custom-select-option.selected {
+  background: rgba(94, 234, 212, 0.22);
+  color: #ecfeff !important;
+}
+
+.custom-select-option.disabled {
+  color: var(--text-faint);
+  cursor: not-allowed;
 }
 
 .btn-group {

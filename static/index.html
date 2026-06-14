@@ -37,9 +37,22 @@
         </div>
 
         <div class="control-group">
-          <label for="target-select">Target</label>
-          <div class="select-wrap">
-            <select id="target-select"></select>
+          <label id="target-label">Target</label>
+          <div class="custom-select" id="target-select">
+            <button
+              type="button"
+              class="custom-select-trigger"
+              id="target-select-trigger"
+              aria-labelledby="target-label target-select-value"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span id="target-select-value">Loading…</span>
+              <svg class="custom-select-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <ul class="custom-select-menu hidden" id="target-select-menu" role="listbox" aria-labelledby="target-label"></ul>
           </div>
         </div>
 

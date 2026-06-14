@@ -9,6 +9,71 @@ const previewEmpty = document.getElementById("preview-empty");
 const previewMeta = document.getElementById("preview-meta");
 const schemaStatus = document.getElementById("schema-status");
 const targetSelect = document.getElementById("target-select");
+const targetSelectTrigger = document.getElementById("target-select-trigger");
+const targetSelectValue = document.getElementById("target-select-value");
+const targetSelectMenu = document.getElementById("target-select-menu");
+let selectedTarget = "";
+
+function closeTargetMenu() {
+  targetSelect.classList.remove("open");
+  targetSelectTrigger.setAttribute("aria-expanded", "false");
+  targetSelectMenu.classList.add("hidden");
+}
+
+function openTargetMenu() {
+  if (targetSelectTrigger.disabled) return;
+  targetSelect.classList.add("open");
+  targetSelectTrigger.setAttribute("aria-expanded", "true");
+  targetSelectMenu.classList.remove("hidden");
+}
+
+function setSelectedTarget(name, { disabled = false } = {}) {
+  selectedTarget = name || "";
+  targetSelectValue.textContent = name || "No target";
+  targetSelectTrigger.disabled = disabled || !name;
+
+  for (const item of targetSelectMenu.querySelectorAll(".custom-select-option")) {
+    const isSelected = item.dataset.value === name;
+    item.classList.toggle("selected", isSelected);
+    item.setAttribute("aria-selected", isSelected ? "true" : "false");
+  }
+}
+
+function renderTargetOptions(targets, placeholder) {
+  targetSelectMenu.innerHTML = "";
+  for (const name of targets) {
+    const item = document.createElement("li");
+    item.className = "custom-select-option";
+    item.dataset.value = name;
+    item.textContent = name;
+    item.setAttribute("role", "option");
+    item.setAttribute("aria-selected", "false");
+    item.addEventListener("click", () => {
+      setSelectedTarget(name);
+      closeTargetMenu();
+      applyBtn.disabled = false;
+    });
+    targetSelectMenu.appendChild(item);
+  }
+  setSelectedTarget(targets[0] || "", { disabled: !targets.length });
+  if (!targets.length) {
+    targetSelectValue.textContent = placeholder;
+    applyBtn.disabled = true;
+  }
+}
+
+targetSelectTrigger.addEventListener("click", () => {
+  if (targetSelectMenu.classList.contains("hidden")) openTargetMenu();
+  else closeTargetMenu();
+});
+
+document.addEventListener("click", (event) => {
+  if (!targetSelect.contains(event.target)) closeTargetMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeTargetMenu();
+});
 const runBtn = document.getElementById("run-btn");
 const applyBtn = document.getElementById("apply-btn");
 
@@ -196,33 +261,16 @@ async function loadTargets() {
     const res = await fetch("/api/targets");
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
-    targetSelect.innerHTML = "";
 
     if (!data.targets?.length) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No targets configured";
-      option.disabled = true;
-      targetSelect.appendChild(option);
-      applyBtn.disabled = true;
+      renderTargetOptions([], "No targets configured");
       return;
     }
 
-    for (const name of data.targets) {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      targetSelect.appendChild(option);
-    }
+    renderTargetOptions(data.targets);
     applyBtn.disabled = false;
   } catch (err) {
-    targetSelect.innerHTML = "";
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = "Failed to load targets";
-    option.disabled = true;
-    targetSelect.appendChild(option);
-    applyBtn.disabled = true;
+    renderTargetOptions([], "Failed to load targets");
     appendLog(`Targets unavailable: ${err.message}`, "error");
   }
 }
@@ -351,7 +399,7 @@ async function consumeSSE(response) {
 
 async function runApply() {
   const sql = editor.getValue().trim();
-  const target = targetSelect.value;
+  const target = selectedTarget;
   if (!sql) return;
 
   const validationError = validateSelectOnly(sql);
@@ -360,7 +408,7 @@ async function runApply() {
     return;
   }
 
-  if (!targetSelect.value) {
+  if (!selectedTarget) {
     appendLog("No target database selected.", "error");
     return;
   }
